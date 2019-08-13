@@ -1,0 +1,452 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Student Management</title>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/ext-all.css" />
+    <!-- LIBS -->
+    <script type="text/javascript" src="../../adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+    <script type="text/javascript" src="../../ext-all.js"></script>
+    <script type="text/javascript" src="PagingMemoryProxy.js"></script>
+    <script>
+        Ext.onReady(function () {
+
+            var selectedItem = []
+
+
+
+            var sm2 = new Ext.grid.CheckboxSelectionModel({
+                listeners: {
+                    'rowselect': function (model, index, re) {
+                        selectedItem.push(index)
+                    },
+                    'rowdeselect': function (model, index, re) {
+                        selectedItem = selectedItem.filter(val => val !== index)
+                    }
+                }
+            });
+
+            var sm1 = new Ext.grid.CheckboxSelectionModel({
+                listeners: {
+                    'rowselect': function (model, index, re) {
+                        selectedItem.push(index)
+                    },
+                    'rowdeselect': function (model, index, re) {
+                        selectedItem = selectedItem.filter(val => val !== index)
+                    }
+                }
+            });
+
+            var contextMenu = new Ext.menu.Menu({
+                items: [{
+                    text: 'Up',
+                    handler: function () {
+                        var sm
+                        grid2.hidden == true ? sm = sm1 : sm = sm2
+                        if (sm.hasSelection()) {
+                            var index = selectedItem[0]
+
+                            var record = store1.getAt(index)
+                            store1.remove(record)
+
+
+                            store2.remove(record)
+
+                            grid1.stopEditing()
+                            store1.insert(index - 1, record)
+                            grid1.startEditing(0, 0)
+
+                            grid2.stopEditing()
+                            store2.insert(index - 1, record)
+                            grid2.startEditing(0, 0)
+
+                        } else {
+                            Ext.Msg.alert('请选择一条记录！')
+                        }
+                    }
+                }, {
+                    text: 'Down',
+                    handler: function () {
+                        var sm
+                        grid2.hidden == true ? sm = sm1 : sm = sm2
+                        if (sm.hasSelection()) {
+                            var index = selectedItem[0]
+
+                            var record = store1.getAt(index)
+                            store1.remove(record)
+
+
+                            store2.remove(record)
+
+                            grid1.stopEditing()
+                            store1.insert(index + 1, record)
+                            grid1.startEditing(0, 0)
+
+                            grid2.stopEditing()
+                            store2.insert(index + 1, record)
+                            grid2.startEditing(0, 0)
+
+                        } else {
+                            Ext.Msg.alert('请选择一条记录！')
+                        }
+                    }
+                }, {
+                    text: 'First',
+                    handler: function () {
+                        var sm
+                        grid2.hidden == true ? sm = sm1 : sm = sm2
+                        if (sm.hasSelection()) {
+                            var index = selectedItem[0]
+
+                            var record = store1.getAt(index)
+                            store1.remove(record)
+
+
+                            store2.remove(record)
+
+                            grid1.stopEditing()
+                            store1.insert(0, record)
+                            grid1.startEditing(0, 0)
+
+                            grid2.stopEditing()
+                            store2.insert(0, record)
+                            grid2.startEditing(0, 0)
+
+                        } else {
+                            Ext.Msg.alert('请选择一条记录！')
+                        }
+                    }
+                }, {
+                    text: 'Last',
+                    handler: function () {
+                        var sm
+                        grid2.hidden == true ? sm = sm1 : sm = sm2
+                        if (sm.hasSelection()) {
+                            var index = selectedItem[0]
+
+                            var record = store1.getAt(index)
+                            store1.remove(record)
+
+
+                            store2.remove(record)
+
+                            grid1.stopEditing()
+                            store1.insert(store1.getCount(), record)
+                            grid1.startEditing(0, 0)
+
+                            grid2.stopEditing()
+                            store2.insert(store2.getCount(), record)
+                            grid2.startEditing(0, 0)
+
+                        } else {
+                            Ext.Msg.alert('请选择一条记录！')
+                        }
+                    }
+                }]
+            })
+
+            var newRecord = new Ext.data.Record.create([
+                { name: 'name', type: 'string' },
+                { name: 'class', type: 'string' },
+                { name: 'sex', type: 'string' },
+                { name: 'age', type: 'number' },
+                { name: 'birthday', type: 'string' },
+                { name: 'avatar', type: 'string' }
+            ])
+
+            var renderAvatar = function (value) {
+                return "<img src='1.png' style='width:10px;height:10px;'/>"
+            }
+
+            var combo = new Ext.form.ComboBox({
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: new Ext.data.ArrayStore({
+                    id: 0,
+                    fields: [
+                        'Id',
+                        'displayText'
+                    ],
+                    data: [[1, 'male'], [2, 'female']]
+                }),
+                valueField: 'Id',
+                displayField: 'displayText'
+            });
+
+
+            var cm1 = new Ext.grid.ColumnModel([
+                new Ext.grid.RowNumberer(),
+                sm1,
+                {
+                    header: 'name',
+                    dataIndex: 'name',
+                    sortable: true,
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+                        })
+                    )
+                },
+                {
+                    header: 'class',
+                    dataIndex: 'class',
+                    sortable: true,
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+
+                        })
+                    )
+                },
+                {
+                    header: 'sex',
+                    dataIndex: 'sex',
+                    editor: new Ext.grid.GridEditor(
+                        combo
+                    )
+                },
+                {
+                    header: 'age',
+                    dataIndex: 'age',
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+
+                        })
+                    )
+                },
+                {
+                    header: 'birthday',
+                    dataIndex: 'birthday',
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.DateField({
+                        })
+                    )
+                },
+                {
+                    header: 'avatar',
+                    dataIndex: 'avatar',
+                    renderer: renderAvatar,
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+                        })
+                    )
+                },
+            ]);
+
+            var cm2 = new Ext.grid.ColumnModel([
+                new Ext.grid.RowNumberer(),
+                sm2,
+                {
+                    header: 'name',
+                    dataIndex: 'name',
+                    sortable: true,
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+                        })
+                    )
+                },
+                {
+                    header: 'class',
+                    dataIndex: 'class',
+                    sortable: true,
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+
+                        })
+                    )
+                },
+                {
+                    header: 'sex',
+                    dataIndex: 'sex',
+                    editor: new Ext.grid.GridEditor(
+                        combo
+                    )
+                },
+                {
+                    header: 'age',
+                    dataIndex: 'age',
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+
+                        })
+                    )
+                },
+                {
+                    header: 'birthday',
+                    dataIndex: 'birthday',
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.DateField({
+                        })
+                    )
+                },
+                {
+                    header: 'avatar',
+                    dataIndex: 'avatar',
+                    renderer: renderAvatar,
+                    editor: new Ext.grid.GridEditor(
+                        new Ext.form.TextField({
+                        })
+                    )
+                },
+            ]);
+
+            var data = [
+                ['ann', 'class-4', 'female', 1, new Date(), '1.png'],
+                ['bob', 'class-3', 'female', 1, new Date(), '1.png'],
+                ['kloe', 'class-4', 'female', 1, new Date(), '1.png'],
+                ['debi', 'class-3', 'female', 1, new Date(), '1.png'],
+                ['ee', 'class-4', 'female', 1, new Date(), '1.png'],
+            ];
+
+            var store2 = new Ext.data.GroupingStore({
+                proxy: new Ext.data.MemoryProxy(data),
+                reader: new Ext.data.ArrayReader({}, [
+                    { name: 'name' },
+                    { name: 'class' },
+                    { name: 'sex' },
+                    { name: 'age' },
+                    { name: 'birthday' },
+                    { name: 'avatar' }
+                ]),
+                groupField: 'class',
+                sortInfo: {
+                    field: 'name',
+                    direction: 'ASC'
+                }
+            });
+
+            store2.load();
+
+            var store1 = new Ext.data.Store({
+                // proxy: new Ext.data.MemoryProxy(data),
+                proxy: new Ext.data.PagingMemoryProxy(data),
+                reader: new Ext.data.ArrayReader({}, [
+                    { name: 'name' },
+                    { name: 'class' },
+                    { name: 'sex' },
+                    { name: 'age' },
+                    { name: 'birthday' },
+                    { name: 'avatar' }
+                ])
+            });
+            store1.load({params:{start:0,limit:10}});
+
+            var bar =new Ext.PagingToolbar({
+                pageSize:10,
+                store:store1,
+                displayInfo:true,
+                displayMsg:'显示第{0}条到第{1}条，共{2}条',
+                emptyMsg:'没有记录'
+            })
+
+            var grid1 = new Ext.grid.EditorGridPanel({
+                title: 'student management',
+                autoHeight: true,
+                renderTo: 'test',
+                cm: cm1,
+                sm: sm1,
+                store: store1,
+                bbar: bar ,
+                items: [{
+                    xtype: 'toolbar',
+                    items: [{
+                        text: 'add',
+                        handler: function () {
+                            if (sm1.hasSelection()) {
+                                var index = selectedItem[0]
+                                var p = new newRecord({
+                                    name: '',
+                                    class: '',
+                                    sex: '',
+                                    age: '',
+                                    birthday: '',
+                                    avatar: ''
+                                })
+
+                                grid1.stopEditing()
+
+                                store1.insert(index + 1, p)
+                                store2.insert(index + 1, p)
+
+                                console.log(index)
+                            } else {
+                                var p = new newRecord({
+                                    name: '',
+                                    class: '',
+                                    sex: '',
+                                    age: '',
+                                    birthday: '',
+                                    avatar: ''
+                                })
+
+                                grid1.stopEditing()
+
+                                store1.insert(0, p)
+                                store2.insert(0, p)
+
+                                grid1.startEditing(0, 0)
+                            }
+
+                        }
+                    },
+                        '-'
+                        , {
+                        text: 'group',
+                        handler: function () {
+                            this.ownerCt.ownerCt.hide()
+                            grid2.show()
+                        }
+                    },'-'
+                        , {
+                            text: 'delete',
+                            handler: function () {
+                                var arr=selectedItem.sort().reverse()
+                                arr.map(i=>{
+                                    var record=store1.getAt(i)
+                                    store1.remove(record)
+                                    store2.remove(record)
+                                })
+                            }
+                        }]
+
+                }]
+
+            });
+
+            var grid2 = new Ext.grid.EditorGridPanel({
+                title: 'student management',
+                autoHeight: true,
+                renderTo: 'test',
+                cm: cm2,
+                sm: sm2,
+                store: store2,
+                view: new Ext.grid.GroupingView(),
+                hidden: true,
+                items: [{
+                    xtype: 'toolbar',
+                    items: [{
+                        text: 'back',
+                        handler: function () {
+                            this.ownerCt.ownerCt.hide()
+                            grid1.show()
+                        }
+                    }]
+
+                }]
+            });
+            const doc = Ext.getDoc();
+            Ext.get(doc).on('contextmenu', function (e) {
+                e.preventDefault();
+                contextMenu.showAt(e.getXY());
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="test"></div>
+</body>
+
+</html>
